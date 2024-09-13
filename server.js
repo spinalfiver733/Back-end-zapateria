@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const sequelize = require('./config/database');
-const productosRoutes = require('./routes/productos');
 const inventarioRoutes = require('./routes/inventario');
 const app = express();
 
@@ -11,7 +10,6 @@ app.use(cors());
 app.use(express.json());
 
 // Rutas
-app.use('/api/productos', productosRoutes);
 app.use('/api/inventario', inventarioRoutes);
 app.get('/api/test', (req, res) => {
   res.json({ message: "Backend conectado exitosamente" });
