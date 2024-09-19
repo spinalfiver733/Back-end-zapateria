@@ -7,16 +7,37 @@ const InventarioInfo = sequelize.define('InventarioInfo', {
     primaryKey: true,
     autoIncrement: true
   },
-  TALLA: DataTypes.STRING(10),
-  MODELO: DataTypes.STRING(50),
-  VENDEDOR: DataTypes.STRING(50),
-  COLOR: DataTypes.STRING(20),
-  PRECIO: DataTypes.DECIMAL(10, 2),
-  METODO_PAGO: DataTypes.STRING(20),
-  FECHA_VENTA: DataTypes.DATE
+  TALLA: {
+    type: DataTypes.STRING(10),
+    allowNull: false
+  },
+  MODELO: {
+    type: DataTypes.STRING(50),
+    allowNull: false
+  },
+  VENDEDOR: {
+    type: DataTypes.STRING(50),
+    allowNull: true
+  },
+  COLOR: {
+    type: DataTypes.STRING(20),
+    allowNull: false
+  },
+  PRECIO: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false
+  },
+  METODO_PAGO: {
+    type: DataTypes.STRING(20),
+    allowNull: true
+  },
+  FECHA_VENTA: {
+    type: DataTypes.DATE,
+    allowNull: true
+  }
 }, {
   tableName: 'inventario_info',
-  timestamps: false // Si tu tabla no tiene createdAt y updatedAt
+  timestamps: false
 });
 
-module.exports = InventarioInfo; 
+module.exports = InventarioInfo;
