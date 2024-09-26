@@ -5,7 +5,11 @@ const InventarioInfo = require('../models/InventarioInfo');
 // Obtener todos los productos del inventario
 router.get('/', async (req, res) => {
   try {
-    const inventario = await InventarioInfo.findAll();
+    const inventario = await InventarioInfo.findAll({
+      where: {
+        FK_ESTATUS_PRODUCTO: 1  // Filtra solo los productos con status 1 (en inventario)
+      }
+    });
     console.log('Inventario enviado:', inventario);
     res.json(inventario);
   } catch (error) {
@@ -17,21 +21,22 @@ router.get('/', async (req, res) => {
 // Agregar un nuevo producto al inventario
 router.post('/', async (req, res) => {
   try {
-    const { talla, modelo, color, precio, vendedor } = req.body;
+    const { modelo, numero, color, precio } = req.body;
     
     // Validación básica
-    if (!talla || !modelo || !color || !precio) {
-      return res.status(400).json({ message: 'Talla, modelo, color y precio son campos requeridos' });
+    if (!modelo || !numero || !color || !precio) {
+      return res.status(400).json({ message: 'Modelo, número, color y precio son campos requeridos' });
     }
 
     const nuevoProducto = await InventarioInfo.create({
-      TALLA: talla,
       MODELO: modelo,
+      TALLA: numero,
       COLOR: color,
       PRECIO: parseFloat(precio),
-      VENDEDOR: vendedor || null,
+      VENDEDOR: null,
       METODO_PAGO: null,
-      FECHA_VENTA: null
+      FECHA_INGRESO: new Date(),
+      FK_ESTATUS_PRODUCTO: 1  // Asigna el status 1 (en inventario) al crear un nuevo producto
     });
 
     console.log('Nuevo producto agregado:', nuevoProducto);

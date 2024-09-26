@@ -15,10 +15,6 @@ const InventarioInfo = sequelize.define('InventarioInfo', {
     type: DataTypes.STRING(50),
     allowNull: false
   },
-  VENDEDOR: {
-    type: DataTypes.STRING(50),
-    allowNull: true
-  },
   COLOR: {
     type: DataTypes.STRING(20),
     allowNull: false
@@ -27,15 +23,16 @@ const InventarioInfo = sequelize.define('InventarioInfo', {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false
   },
-  METODO_PAGO: {
-    type: DataTypes.STRING(20),
-    allowNull: true
-  },
-  FECHA_VENTA: {
+  FECHA_INGRESO: {
     type: DataTypes.DATE,
-    allowNull: true
+    allowNull: false
+  },
+  FK_ESTATUS_PRODUCTO: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 1  // Asumimos que 1 significa "en inventario"
   }
-}, {
+},{
   tableName: 'inventario_info',
   timestamps: false
 });
