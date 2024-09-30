@@ -1,16 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const VentasInfo = require('../models/VentasInfo');
+const InventarioInfo = require('../models/InventarioInfo');
+const sequelize = require('../config/database');
 
-//Realizar una nueva venta
-
-router.post('/',async(req,res)=>{
-    try{
-        const {} = req.body;
-    }catch(error){
-
-    }
-    /*const t = await sequelize.transaction();
+// Realizar una nueva venta
+router.post('/', async (req, res) => {
+    const t = await sequelize.transaction();
 
     try {
         const { FK_PRODUCTO, VENDEDOR, METODO_PAGO, OBSERVACIONES } = req.body;
@@ -47,7 +43,7 @@ router.post('/',async(req,res)=>{
         await t.rollback();
         console.error('Error al realizar la venta:', error);
         res.status(500).json({ message: 'Error al procesar la venta' });
-    }*/
+    }
 });
 
 module.exports = router;
