@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: zapateria_pdv
+-- Host: 127.0.0.1    Database: zapateria_pvd
 -- ------------------------------------------------------
 -- Server version	8.0.36
 
@@ -59,7 +59,7 @@ CREATE TABLE `inventario_info` (
   PRIMARY KEY (`PK_PRODUCTO`),
   KEY `fk_estatus_producto` (`FK_ESTATUS_PRODUCTO`),
   CONSTRAINT `fk_estatus_producto` FOREIGN KEY (`FK_ESTATUS_PRODUCTO`) REFERENCES `estados_producto` (`id_estado`)
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -68,7 +68,7 @@ CREATE TABLE `inventario_info` (
 
 LOCK TABLES `inventario_info` WRITE;
 /*!40000 ALTER TABLE `inventario_info` DISABLE KEYS */;
-INSERT INTO `inventario_info` VALUES (1,'36','NIKE AIR',NULL,'Blanco',4300.00,NULL,'2024-09-26 17:23:08',2),(2,'21','SHADOW',NULL,'Negro',350.00,NULL,'2024-09-26 17:49:33',2),(3,'23','MINNIE',NULL,'Blanco',280.00,NULL,'2024-09-26 17:49:59',2),(4,'23','Explorer',NULL,'Negro',850.00,NULL,'2024-09-26 18:08:01',2),(5,'21','EXPLORER',NULL,'Negro',340.00,NULL,'2024-09-26 18:08:35',2),(6,'21','LACOSTE',NULL,'Negro',250.00,NULL,'2024-09-26 18:09:36',2),(7,'22','MIKE',NULL,'Negro',230.00,NULL,'2024-09-26 18:16:25',1),(8,'22','MIKE',NULL,'Negro',230.00,NULL,'2024-09-26 18:16:33',2),(9,'22','MIKE',NULL,'Negro',230.00,NULL,'2024-09-26 18:16:45',1),(10,'22','MIMMY',NULL,'Blanco',150.00,NULL,'2024-09-26 18:18:13',1),(11,'21','Prueba2',NULL,'Negro',150.00,NULL,'2024-09-26 19:45:09',1),(46,'23','NUEVO PRODUCTO',NULL,'Negro',1000.00,NULL,'2024-09-26 21:47:46',1);
+INSERT INTO `inventario_info` VALUES (7,'22','MIKE',NULL,'Negro',230.00,NULL,'2024-09-26 18:16:25',2),(10,'22','MIMMY',NULL,'Blanco',150.00,NULL,'2024-09-26 18:18:13',2),(46,'23','NUEVO PRODUCTO',NULL,'Negro',1000.00,NULL,'2024-09-26 21:47:46',2),(47,'21','NIKE',NULL,'Negro',2500.00,NULL,'2024-09-30 22:51:21',1);
 /*!40000 ALTER TABLE `inventario_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -80,7 +80,7 @@ DROP TABLE IF EXISTS `ventas_info`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `ventas_info` (
-  `PK_PRODUCTO` int NOT NULL AUTO_INCREMENT,
+  `PK_VENTA` int NOT NULL AUTO_INCREMENT,
   `TALLA` varchar(10) DEFAULT NULL,
   `MODELO` varchar(50) DEFAULT NULL,
   `VENDEDOR` varchar(50) DEFAULT NULL,
@@ -89,8 +89,11 @@ CREATE TABLE `ventas_info` (
   `METODO_PAGO` varchar(20) DEFAULT NULL,
   `FECHA_VENTA` datetime DEFAULT NULL,
   `OBSERVACIONES` varchar(200) DEFAULT NULL,
-  PRIMARY KEY (`PK_PRODUCTO`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `FK_PRODUCTO` int DEFAULT NULL,
+  PRIMARY KEY (`PK_VENTA`),
+  KEY `fk_ventas_producto` (`FK_PRODUCTO`),
+  CONSTRAINT `fk_ventas_producto` FOREIGN KEY (`FK_PRODUCTO`) REFERENCES `inventario_info` (`PK_PRODUCTO`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -99,7 +102,39 @@ CREATE TABLE `ventas_info` (
 
 LOCK TABLES `ventas_info` WRITE;
 /*!40000 ALTER TABLE `ventas_info` DISABLE KEYS */;
+INSERT INTO `ventas_info` VALUES (1,'23','NUEVO PRODUCTO','Vendedor 2','Negro',1000.00,'Tarjeta','2024-09-30 22:19:47','Obs',46),(2,'22','MIKE','Vendedor 2','Negro',230.00,'Tarjeta','2024-09-30 22:23:41','Este es otro',7),(3,'22','MIMMY','Vendedor 2','Blanco',150.00,'Tarjeta','2024-09-30 22:29:03','Esta es la observación de la venta',10);
 /*!40000 ALTER TABLE `ventas_info` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `ventasinfos`
+--
+
+DROP TABLE IF EXISTS `ventasinfos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ventasinfos` (
+  `PK_VENTA` int NOT NULL AUTO_INCREMENT,
+  `VENDEDOR` varchar(50) NOT NULL,
+  `METODO_PAGO` varchar(20) NOT NULL,
+  `FECHA_VENTA` datetime NOT NULL,
+  `OBSERVACIONES` varchar(200) DEFAULT NULL,
+  `FK_PRODUCTO` int NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  PRIMARY KEY (`PK_VENTA`),
+  KEY `FK_PRODUCTO` (`FK_PRODUCTO`),
+  CONSTRAINT `ventasinfos_ibfk_1` FOREIGN KEY (`FK_PRODUCTO`) REFERENCES `inventario_info` (`PK_PRODUCTO`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ventasinfos`
+--
+
+LOCK TABLES `ventasinfos` WRITE;
+/*!40000 ALTER TABLE `ventasinfos` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ventasinfos` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -111,4 +146,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-26 18:13:59
+-- Dump completed on 2024-09-30 18:10:32
