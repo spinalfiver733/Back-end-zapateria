@@ -4,6 +4,7 @@ require('dotenv').config();
 const sequelize = require('./config/database');
 const inventarioRoutes = require('./routes/inventario');
 const ventasRoutes = require('./routes/ventas'); // Importa las rutas de ventas
+const metodosPagoRouter = require('./routes/metodosPago');
 const app = express();
 
 // Middleware
@@ -13,6 +14,8 @@ app.use(express.json());
 // Rutas
 app.use('/api/inventario', inventarioRoutes);
 app.use('/api/ventas', ventasRoutes); // Agrega las rutas de ventas
+app.use('/api/metodosPago', metodosPagoRouter);
+
 app.get('/api/test', (req, res) => {
   res.json({ message: "Backend conectado exitosamente" });
 });

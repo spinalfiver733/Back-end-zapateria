@@ -7,12 +7,16 @@ const InventarioInfo = sequelize.define('InventarioInfo', {
     primaryKey: true,
     autoIncrement: true
   },
-  TALLA: {
-    type: DataTypes.STRING(10),
+  MARCA: {
+    type: DataTypes.STRING(100),
     allowNull: false
   },
   MODELO: {
     type: DataTypes.STRING(50),
+    allowNull: false
+  },
+  TALLA: {
+    type: DataTypes.STRING(10),
     allowNull: false
   },
   COLOR: {
@@ -30,7 +34,7 @@ const InventarioInfo = sequelize.define('InventarioInfo', {
   FK_ESTATUS_PRODUCTO: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 1  // Asumimos que 1 significa "en inventario"
+    defaultValue: 1
   }
 },{
   tableName: 'inventario_info',
