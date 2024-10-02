@@ -1,8 +1,10 @@
-const { DataTypes } = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const InventarioInfo = require('./InventarioInfo');
 
-const VentasInfo = sequelize.define('VentasInfo', {
+class VentasInfo extends Model {}
+
+VentasInfo.init({
     PK_VENTA: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -47,12 +49,16 @@ const VentasInfo = sequelize.define('VentasInfo', {
             model: InventarioInfo,
             key: 'PK_PRODUCTO'
         }
+    },
+    FK_ORDEN: {
+        type: DataTypes.INTEGER,
+        allowNull: true
     }
 }, {
+    sequelize,
+    modelName: 'VentasInfo',
     tableName: 'ventas_info',
     timestamps: false
 });
-
-VentasInfo.belongsTo(InventarioInfo, { foreignKey: 'FK_PRODUCTO' });
 
 module.exports = VentasInfo;
