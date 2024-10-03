@@ -74,4 +74,25 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Añade esta nueva ruta al final de tu archivo inventario.js
+
+// Ruta para actualizar el estado de un producto
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { FK_ESTATUS_PRODUCTO } = req.body;
+
+    const producto = await InventarioInfo.findByPk(id);
+    if (!producto) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+
+    await producto.update({ FK_ESTATUS_PRODUCTO });
+    res.json(producto);
+  } catch (error) {
+    console.error('Error al actualizar el producto:', error);
+    res.status(500).json({ message: 'Error al actualizar el producto' });
+  }
+});
+
 module.exports = router;

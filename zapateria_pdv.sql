@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: zapateria_pvd
 -- ------------------------------------------------------
--- Server version	8.0.39
+-- Server version	8.0.36
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -19,7 +19,6 @@
 -- Table structure for table `estados_producto`
 --
 USE zapateria_pvd;
-
 DROP TABLE IF EXISTS `estados_producto`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -36,7 +35,7 @@ CREATE TABLE `estados_producto` (
 
 LOCK TABLES `estados_producto` WRITE;
 /*!40000 ALTER TABLE `estados_producto` DISABLE KEYS */;
-INSERT INTO `estados_producto` VALUES (0,'Dado de baja'),(1,'En inventario'),(2,'Vendido');
+INSERT INTO `estados_producto` VALUES (0,'Dado de baja'),(1,'En inventario'),(2,'Vendido'),(3,'En venta');
 /*!40000 ALTER TABLE `estados_producto` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -61,7 +60,7 @@ CREATE TABLE `inventario_info` (
   PRIMARY KEY (`PK_PRODUCTO`),
   KEY `fk_estatus_producto` (`FK_ESTATUS_PRODUCTO`),
   CONSTRAINT `fk_estatus_producto` FOREIGN KEY (`FK_ESTATUS_PRODUCTO`) REFERENCES `estados_producto` (`id_estado`)
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -70,7 +69,7 @@ CREATE TABLE `inventario_info` (
 
 LOCK TABLES `inventario_info` WRITE;
 /*!40000 ALTER TABLE `inventario_info` DISABLE KEYS */;
-INSERT INTO `inventario_info` VALUES (58,'21','126',NULL,'NEGRO ',250.00,NULL,'2024-10-02 04:03:46',1,'CLEO'),(59,'22','126',NULL,'NEGRO ',250.00,NULL,'2024-10-02 04:04:01',1,'CLEO'),(60,'22','126',NULL,'AMARILLO/BLANCO',250.00,NULL,'2024-10-02 04:04:15',2,'CLEO');
+INSERT INTO `inventario_info` VALUES (64,'22','AIR FORCE 1',NULL,'NEGRO ',250.00,NULL,'2024-10-02 23:25:49',3,'NIKE'),(65,'21','AIR FORCE 1',NULL,'NEGRO ',230.00,NULL,'2024-10-02 23:31:30',3,'NIKE');
 /*!40000 ALTER TABLE `inventario_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -113,7 +112,7 @@ CREATE TABLE `ordenes` (
   `OBSERVACIONES` text,
   `TOTAL` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`PK_ORDEN`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -122,7 +121,6 @@ CREATE TABLE `ordenes` (
 
 LOCK TABLES `ordenes` WRITE;
 /*!40000 ALTER TABLE `ordenes` DISABLE KEYS */;
-INSERT INTO `ordenes` VALUES (1,'2024-10-02 04:15:18','Vendedor 2',2,'observaciones',250.00);
 /*!40000 ALTER TABLE `ordenes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -150,7 +148,7 @@ CREATE TABLE `ventas_info` (
   KEY `FK_ORDEN` (`FK_ORDEN`),
   CONSTRAINT `fk_ventas_producto` FOREIGN KEY (`FK_PRODUCTO`) REFERENCES `inventario_info` (`PK_PRODUCTO`),
   CONSTRAINT `ventas_info_ibfk_1` FOREIGN KEY (`FK_ORDEN`) REFERENCES `ordenes` (`PK_ORDEN`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -159,7 +157,6 @@ CREATE TABLE `ventas_info` (
 
 LOCK TABLES `ventas_info` WRITE;
 /*!40000 ALTER TABLE `ventas_info` DISABLE KEYS */;
-INSERT INTO `ventas_info` VALUES (6,'22','126','Vendedor 2','AMARILLO/BLANCO',250.00,'2','2024-10-02 04:15:18','Observaciones',60,1);
 /*!40000 ALTER TABLE `ventas_info` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -172,4 +169,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-02  1:00:28
+-- Dump completed on 2024-10-02 18:46:36
