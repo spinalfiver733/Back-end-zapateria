@@ -35,17 +35,17 @@ router.post('/', async (req, res) => {
     for (const producto of productos) {
       const { FK_PRODUCTO, PRECIO } = producto;
 
-      // Verificar si el producto existe y está disponible
+      // Verificar si el producto existe y está en estado "En venta" (3)
       const inventarioProducto = await InventarioInfo.findOne({
         where: { 
           PK_PRODUCTO: FK_PRODUCTO,
-          FK_ESTATUS_PRODUCTO: 1 
+          FK_ESTATUS_PRODUCTO: 3 // Cambiado de 1 a 3
         }
       }, { transaction: t });
 
       if (!inventarioProducto) {
         await t.rollback();
-        return res.status(404).json({ message: `Producto ${FK_PRODUCTO} no encontrado o no disponible` });
+        return res.status(404).json({ message: `Producto ${FK_PRODUCTO} no encontrado o no está en estado de venta` });
       }
 
       // Preparar datos para VentasInfo
@@ -62,9 +62,9 @@ router.post('/', async (req, res) => {
         OBSERVACIONES: producto.OBSERVACIONES || ''
       });
 
-      // Actualizar el estado del producto en el inventario
+      // Actualizar el estado del producto en el inventario a "Vendido" (2)
       await InventarioInfo.update(
-        { FK_ESTATUS_PRODUCTO: 2 },  // Asumiendo que 2 significa "vendido"
+        { FK_ESTATUS_PRODUCTO: 2 },
         { where: { PK_PRODUCTO: FK_PRODUCTO }, transaction: t }
       );
 

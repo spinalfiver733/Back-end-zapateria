@@ -33,6 +33,7 @@ router.get('/modelos/:marca', async (req, res) => {
   }
 });
 
+
 // Ruta existente para obtener todos los productos del inventario
 router.get('/', async (req, res) => {
   try {
@@ -92,6 +93,20 @@ router.put('/:id', async (req, res) => {
   } catch (error) {
     console.error('Error al actualizar el producto:', error);
     res.status(500).json({ message: 'Error al actualizar el producto' });
+  }
+});
+
+// Nueva ruta para obtener un producto específico por ID
+router.get('/:id', async (req, res) => {
+  try {
+    const producto = await InventarioInfo.findByPk(req.params.id);
+    if (!producto) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+    res.json(producto);
+  } catch (error) {
+    console.error('Error al obtener el producto:', error);
+    res.status(500).json({ message: 'Error al obtener el producto', error: error.message });
   }
 });
 
