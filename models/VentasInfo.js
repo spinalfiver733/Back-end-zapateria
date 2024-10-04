@@ -53,6 +53,10 @@ VentasInfo.init({
     FK_ORDEN: {
         type: DataTypes.INTEGER,
         allowNull: true
+    },
+    MARCA:{
+        type: DataTypes.STRING(100),
+        allowNull: true
     }
 }, {
     sequelize,

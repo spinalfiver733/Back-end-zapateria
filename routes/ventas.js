@@ -29,6 +29,7 @@ router.post('/', async (req, res) => {
         FK_PRODUCTO,
         TALLA: producto.TALLA,
         MODELO: producto.MODELO,
+        MARCA: producto.MARCA,
         COLOR: producto.COLOR,
         PRECIO: PRECIO || producto.PRECIO,
         VENDEDOR,
