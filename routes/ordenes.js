@@ -33,13 +33,13 @@ router.post('/', async (req, res) => {
 
     // Procesar cada producto en la orden
     for (const producto of productos) {
-      const { FK_PRODUCTO, PRECIO } = producto;
+      const { FK_PRODUCTO, PRECIO, MARCA, OBSERVACIONES: productoObservaciones } = producto;
 
       // Verificar si el producto existe y está en estado "En venta" (3)
       const inventarioProducto = await InventarioInfo.findOne({
         where: { 
           PK_PRODUCTO: FK_PRODUCTO,
-          FK_ESTATUS_PRODUCTO: 3 // Cambiado de 1 a 3
+          FK_ESTATUS_PRODUCTO: 3
         }
       }, { transaction: t });
 
@@ -59,7 +59,8 @@ router.post('/', async (req, res) => {
         VENDEDOR,
         METODO_PAGO,
         FECHA_VENTA: new Date(),
-        OBSERVACIONES: producto.OBSERVACIONES || ''
+        OBSERVACIONES: productoObservaciones || OBSERVACIONES || '',
+        MARCA: MARCA || inventarioProducto.MARCA // Aseguramos que MARCA se incluya
       });
 
       // Actualizar el estado del producto en el inventario a "Vendido" (2)
