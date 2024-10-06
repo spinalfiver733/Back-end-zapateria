@@ -3,6 +3,7 @@ const router = express.Router();
 const VentasInfo = require('../models/VentasInfo');
 const InventarioInfo = require('../models/InventarioInfo');
 const sequelize = require('../config/database');
+const { Op } = require('sequelize');
 
 router.post('/', async (req, res) => {
     const t = await sequelize.transaction();
@@ -79,6 +80,50 @@ router.post('/', async (req, res) => {
       console.error('Error al realizar la venta:', error);
       res.status(500).json({ message: 'Error al procesar la venta', error: error.message });
     }
+});
+
+router.get('/', async (req, res) => {
+  console.log('GET request received on /api/ventas');
+  console.log('Query params:', req.query);
+  
+  const { periodo } = req.query;
+  let whereClause = {};
+
+  const now = new Date();
+  switch(periodo) {
+    case 'hoy':
+      whereClause.FECHA_VENTA = {
+        [Op.gte]: new Date(now.getFullYear(), now.getMonth(), now.getDate())
+      };
+      break;
+    case 'semana':
+      whereClause.FECHA_VENTA = {
+        [Op.gte]: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7)
+      };
+      break;
+    case 'mensual':
+      whereClause.FECHA_VENTA = {
+        [Op.gte]: new Date(now.getFullYear(), now.getMonth(), 1)
+      };
+      break;
+    case 'anual':
+      whereClause.FECHA_VENTA = {
+        [Op.gte]: new Date(now.getFullYear(), 0, 1)
+      };
+      break;
+  }
+
+  try {
+    const ventas = await VentasInfo.findAll({
+      where: whereClause,
+      attributes: ['MARCA', 'TALLA', 'VENDEDOR', 'COLOR', 'PRECIO', 'METODO_PAGO', 'OBSERVACIONES']
+    });
+    console.log('Ventas encontradas:', ventas.length);
+    res.json(ventas);
+  } catch (error) {
+    console.error('Error fetching ventas:', error);
+    res.status(500).json({ message: 'Error al obtener datos de ventas' });
+  }
 });
 
 module.exports = router;
