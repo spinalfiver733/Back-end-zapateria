@@ -1,11 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+
 const sequelize = require('./config/database');
 const inventarioRoutes = require('./routes/inventario');
 const ventasRoutes = require('./routes/ventas');
 const metodosPagoRouter = require('./routes/metodosPago');
 const ordenesRoutes = require('./routes/ordenes'); // Importa las rutas de órdenes
+const usuariosRoutes = require('./routes/usuarios'); // Importa las nuevas rutas
+
 const app = express();
 
 // Middleware
@@ -17,6 +20,7 @@ app.use('/api/inventario', inventarioRoutes);
 app.use('/api/ventas', ventasRoutes);
 app.use('/api/metodosPago', metodosPagoRouter);
 app.use('/api/ordenes', ordenesRoutes); // Agrega las rutas de órdenes
+app.use('/api/usuarios', usuariosRoutes); // Agrega las nuevas rutas
 
 app.get('/api/test', (req, res) => {
   res.json({ message: "Backend conectado exitosamente" });
