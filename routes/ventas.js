@@ -83,9 +83,8 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/', async (req, res) => {
-  console.log('GET request received on /api/ventas');
-  console.log('Query params:', req.query);
-  
+  //console.log('GET request received on /api/ventas');
+  //console.log('Query params:', req.query);
   const { periodo } = req.query;
   let whereClause = {};
 
@@ -116,7 +115,7 @@ router.get('/', async (req, res) => {
   try {
     const ventas = await VentasInfo.findAll({
       where: whereClause,
-      attributes: ['MARCA', 'TALLA', 'VENDEDOR', 'COLOR', 'PRECIO', 'METODO_PAGO', 'OBSERVACIONES']
+      attributes: ['MARCA', 'TALLA', 'VENDEDOR', 'COLOR', 'PRECIO', 'METODO_PAGO', 'FECHA_VENTA', 'OBSERVACIONES']
     });
     console.log('Ventas encontradas:', ventas.length);
     res.json(ventas);
