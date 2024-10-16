@@ -23,7 +23,7 @@ VentasInfo.init({
         allowNull: true
     },
     VENDEDOR: {
-        type: DataTypes.STRING(50),
+        type: DataTypes.INTEGER,  // Cambiado de STRING a INTEGER
         allowNull: true
     },
     COLOR: {

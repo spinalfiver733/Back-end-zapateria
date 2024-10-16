@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const VentasInfo = require('../models/VentasInfo');
 const InventarioInfo = require('../models/InventarioInfo');
+const PdvUsuarios = require('../models/usuariosInfo');  // Añade esta línea
 const sequelize = require('../config/database');
 const { Op } = require('sequelize');
 
@@ -83,8 +84,6 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/', async (req, res) => {
-  //console.log('GET request received on /api/ventas');
-  //console.log('Query params:', req.query);
   const { periodo } = req.query;
   let whereClause = {};
 
@@ -115,14 +114,26 @@ router.get('/', async (req, res) => {
   try {
     const ventas = await VentasInfo.findAll({
       where: whereClause,
-      attributes: ['MARCA', 'TALLA', 'VENDEDOR', 'COLOR', 'PRECIO', 'METODO_PAGO', 'FECHA_VENTA', 'OBSERVACIONES']
+      attributes: ['MARCA', 'TALLA', 'COLOR', 'PRECIO', 'METODO_PAGO', 'FECHA_VENTA', 'OBSERVACIONES'],
+      include: [{
+        model: PdvUsuarios,
+        as: 'Vendedor',
+        attributes: ['NOMBRE_USUARIO']
+      }]
     });
-    console.log('Ventas encontradas:', ventas.length);
-    res.json(ventas);
+    
+    const ventasFormateadas = ventas.map(venta => ({
+      ...venta.get({ plain: true }),
+      VENDEDOR: venta.Vendedor ? venta.Vendedor.NOMBRE_USUARIO : 'Desconocido'
+    }));
+
+    console.log('Ventas encontradas:', ventasFormateadas.length);
+    res.json(ventasFormateadas);
   } catch (error) {
     console.error('Error fetching ventas:', error);
     res.status(500).json({ message: 'Error al obtener datos de ventas' });
   }
 });
+
 
 module.exports = router;
