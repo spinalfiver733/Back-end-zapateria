@@ -52,9 +52,9 @@ router.get('/', async (req, res) => {
 // Ruta existente para agregar un nuevo producto al inventario
 router.post('/', async (req, res) => {
   try {
-    const { marca, modelo, numero, color, precio } = req.body;
+    const { marca, modelo, numero, color, precio ,codigo_barra} = req.body;
     
-    if (!marca || !modelo || !numero || !color || !precio) {
+    if (!marca || !modelo || !numero || !color || !precio || !codigo_barra) {
       return res.status(400).json({ message: 'Todos los campos son requeridos' });
     }
 
@@ -64,6 +64,7 @@ router.post('/', async (req, res) => {
       TALLA: numero,
       COLOR: color,
       PRECIO: parseFloat(precio),
+      CODIGO_BARRA: codigo_barra,
       FECHA_INGRESO: new Date(),
       FK_ESTATUS_PRODUCTO: 1
     });

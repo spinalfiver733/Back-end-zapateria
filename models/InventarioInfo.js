@@ -35,6 +35,10 @@ const InventarioInfo = sequelize.define('InventarioInfo', {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 1
+  },
+  CODIGO_BARRA:{
+    type: DataTypes.STRING(255),
+    allowNull: false
   }
 },{
   tableName: 'inventario_info',
