@@ -1,6 +1,43 @@
 const express = require('express');
 const router = express.Router();
 const InventarioInfo = require('../models/InventarioInfo');
+const VentasInfo = require('../models/VentasInfo');
+
+// Nueva ruta para buscar producto vendido por código de barras (DEBE IR ANTES DE /:id)
+router.get('/vendido/:codigoBarras', async (req, res) => {
+  try {
+    const { codigoBarras } = req.params;
+    console.log('Buscando código de barras:', codigoBarras);
+    
+    const producto = await InventarioInfo.findOne({
+      where: {
+        CODIGO_BARRA: codigoBarras,
+        FK_ESTATUS_PRODUCTO: 2 // Estado "vendido"
+      },
+      include: [{
+        model: VentasInfo,
+        required: true,
+        attributes: ['FECHA_VENTA', 'PRECIO', 'VENDEDOR']
+      }],
+      raw: true,
+      nest: true
+    });
+
+    console.log('Producto encontrado:', JSON.stringify(producto, null, 2));
+
+    if (producto) {
+      res.json(producto);
+    } else {
+      res.status(404).json({ message: 'Producto no encontrado' });
+    }
+  } catch (error) {
+    console.error('Error al buscar el producto vendido:', error);
+    res.status(500).json({ 
+      message: 'Error al buscar el producto', 
+      error: error.message 
+    });
+  }
+});
 
 // Obtener todas las marcas únicas
 router.get('/marcas', async (req, res) => {
@@ -33,8 +70,7 @@ router.get('/modelos/:marca', async (req, res) => {
   }
 });
 
-
-// Ruta existente para obtener todos los productos del inventario
+// Ruta para obtener todos los productos del inventario
 router.get('/', async (req, res) => {
   try {
     const inventario = await InventarioInfo.findAll({
@@ -49,10 +85,10 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Ruta existente para agregar un nuevo producto al inventario
+// Ruta para agregar un nuevo producto al inventario
 router.post('/', async (req, res) => {
   try {
-    const { marca, modelo, numero, color, precio ,codigo_barra} = req.body;
+    const { marca, modelo, numero, color, precio, codigo_barra } = req.body;
     
     if (!marca || !modelo || !numero || !color || !precio || !codigo_barra) {
       return res.status(400).json({ message: 'Todos los campos son requeridos' });
@@ -75,8 +111,6 @@ router.post('/', async (req, res) => {
     res.status(500).json({ message: 'Error al agregar el producto al inventario' });
   }
 });
-
-// Añade esta nueva ruta al final de tu archivo inventario.js
 
 // Ruta para actualizar el estado de un producto
 router.put('/:id', async (req, res) => {
