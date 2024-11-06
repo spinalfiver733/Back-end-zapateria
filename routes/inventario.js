@@ -17,7 +17,7 @@ router.get('/vendido/:codigoBarras', async (req, res) => {
       include: [{
         model: VentasInfo,
         required: true,
-        attributes: ['FECHA_VENTA', 'PRECIO', 'VENDEDOR']
+        attributes: ['PK_VENTA', 'FECHA_VENTA', 'PRECIO', 'VENDEDOR', 'METODO_PAGO'] // Agregamos PK_VENTA
       }],
       raw: true,
       nest: true
@@ -38,7 +38,6 @@ router.get('/vendido/:codigoBarras', async (req, res) => {
     });
   }
 });
-
 // Obtener todas las marcas únicas
 router.get('/marcas', async (req, res) => {
   try {
