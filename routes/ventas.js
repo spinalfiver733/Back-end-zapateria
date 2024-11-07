@@ -135,5 +135,27 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/orden/:ordenId', async (req, res) => {
+  try {
+    const venta = await VentasInfo.findOne({
+      where: {
+        FK_ORDEN: req.params.ordenId
+      }
+    });
+
+    if (!venta) {
+      return res.status(404).json({ message: 'Venta no encontrada' });
+    }
+
+    // Log para debugging
+    console.log('Venta encontrada:', venta);
+
+    res.json(venta);
+  } catch (error) {
+    console.error('Error al obtener venta:', error);
+    res.status(500).json({ message: 'Error al obtener venta' });
+  }
+});
+
 
 module.exports = router;
