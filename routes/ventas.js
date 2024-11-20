@@ -5,6 +5,7 @@ const InventarioInfo = require('../models/InventarioInfo');
 const PdvUsuarios = require('../models/usuariosInfo');  // Añade esta línea
 const sequelize = require('../config/database');
 const { Op } = require('sequelize');
+const MetodosPago = require('../models/MetodosPago');
 
 router.post('/', async (req, res) => {
     const t = await sequelize.transaction();
@@ -156,6 +157,46 @@ router.get('/orden/:ordenId', async (req, res) => {
     res.status(500).json({ message: 'Error al obtener venta' });
   }
 });
+
+router.get('/historial', async (req, res) => {
+  try {
+    const ventas = await VentasInfo.findAll({
+      attributes: [
+        'PK_VENTA',
+        'MARCA', 
+        'TALLA',
+        'MODELO', 
+        'COLOR',
+        'PRECIO',
+        'FECHA_VENTA',
+        'OBSERVACIONES'
+      ],
+      include: [
+        {
+          model: PdvUsuarios,
+          as: 'Vendedor',
+          attributes: ['NOMBRE_USUARIO']
+        },
+        {
+          model: MetodosPago, // Asegúrate de tener importado el modelo
+          as: 'MetodoPago',
+          attributes: ['DESCRIPCION_METODO']
+        }
+      ],
+      order: [['FECHA_VENTA', 'DESC']]
+    });
+ 
+    const ventasFormateadas = ventas.map(venta => ({
+      ...venta.get({ plain: true }),
+      VENDEDOR: venta.Vendedor ? venta.Vendedor.NOMBRE_USUARIO : 'Desconocido',
+      METODO_PAGO: venta.MetodoPago ? venta.MetodoPago.DESCRIPCION_METODO : 'Desconocido'
+    }));
+    
+    res.json(ventasFormateadas);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener historial' });
+  }
+ });
 
 
 module.exports = router;
