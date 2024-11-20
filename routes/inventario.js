@@ -2,42 +2,73 @@ const express = require('express');
 const router = express.Router();
 const InventarioInfo = require('../models/InventarioInfo');
 const VentasInfo = require('../models/VentasInfo');
+const PdvUsuarios = require('../models/usuariosInfo');
+const MetodosPago = require('../models/MetodosPago');
+
 
 // Nueva ruta para buscar producto vendido por código de barras (DEBE IR ANTES DE /:id)
 router.get('/vendido/:codigoBarras', async (req, res) => {
   try {
     const { codigoBarras } = req.params;
     console.log('Buscando código de barras:', codigoBarras);
-    
+
     const producto = await InventarioInfo.findOne({
       where: {
         CODIGO_BARRA: codigoBarras,
         FK_ESTATUS_PRODUCTO: 2 // Estado "vendido"
       },
-      include: [{
-        model: VentasInfo,
-        required: true,
-        attributes: ['PK_VENTA', 'FECHA_VENTA', 'PRECIO', 'VENDEDOR', 'METODO_PAGO'] // Agregamos PK_VENTA
-      }],
-      raw: true,
-      nest: true
+      include: [
+        {
+          model: VentasInfo,
+          required: true,
+          attributes: ['PK_VENTA', 'FECHA_VENTA', 'PRECIO'], // Solo lo necesario
+          include: [
+            {
+              model: PdvUsuarios,
+              as: 'Vendedor', // Alias configurado en asociaciones
+              attributes: ['NOMBRE_USUARIO'] // Obtenemos el nombre del vendedor
+            },
+            {
+              model: MetodosPago,
+              as: 'MetodoPago', // Alias definido en associations.js
+              attributes: ['DESCRIPCION_METODO'] // Obtenemos la descripción del método
+            }
+          ]
+        }
+      ]
     });
 
     console.log('Producto encontrado:', JSON.stringify(producto, null, 2));
 
     if (producto) {
-      res.json(producto);
+      const productoPlano = producto.get({ plain: true });
+
+      // Ajustamos la respuesta para mantener estructura clara
+      const venta = productoPlano.VentasInfos;
+      const resultado = {
+        ...productoPlano,
+        VENTA: {
+          ...venta,
+          VENDEDOR: venta.Vendedor?.NOMBRE_USUARIO,
+          METODO_PAGO: venta.MetodosPago?.DESCRIPCION_METODO
+        }
+      };
+
+      delete resultado.VentasInfos; // Eliminamos la clave original para evitar confusión
+
+      res.json(resultado);
     } else {
       res.status(404).json({ message: 'Producto no encontrado' });
     }
   } catch (error) {
     console.error('Error al buscar el producto vendido:', error);
-    res.status(500).json({ 
-      message: 'Error al buscar el producto', 
-      error: error.message 
+    res.status(500).json({
+      message: 'Error al buscar el producto',
+      error: error.message
     });
   }
 });
+
 // Obtener todas las marcas únicas
 router.get('/marcas', async (req, res) => {
   try {

@@ -4,6 +4,8 @@ const InventarioInfo = require('./InventarioInfo');
 const PdvUsuarios = require('./usuariosInfo');
 const DevolucionesInfo = require('./DevolucionesInfo');
 const SaldosFavor = require('./SaldosFavor');
+const MetodosPago = require('./MetodosPago');
+
 
 // Asociaciones de Ordenes y Ventas
 Orden.hasMany(VentasInfo, { foreignKey: 'FK_ORDEN' });
@@ -36,6 +38,10 @@ SaldosFavor.belongsTo(VentasInfo, { foreignKey: 'FK_VENTA_USO', as: 'VentaUso' }
 // Asociaciones inversas para Saldos
 DevolucionesInfo.hasMany(SaldosFavor, { foreignKey: 'FK_DEVOLUCION' });
 VentasInfo.hasMany(SaldosFavor, { foreignKey: 'FK_VENTA_USO' });
+
+// Asociación entre VentasInfo y MetodosPago
+VentasInfo.belongsTo(MetodosPago, { foreignKey: 'METODO_PAGO', targetKey: 'PK_METODO', as: 'MetodoPago' });
+MetodosPago.hasMany(VentasInfo, { foreignKey: 'METODO_PAGO', sourceKey: 'PK_METODO' });
 
 module.exports = {
     Orden,
