@@ -178,25 +178,32 @@ router.get('/historial', async (req, res) => {
           attributes: ['NOMBRE_USUARIO']
         },
         {
-          model: MetodosPago, // Asegúrate de tener importado el modelo
+          model: MetodosPago,
           as: 'MetodoPago',
           attributes: ['DESCRIPCION_METODO']
+        },
+        {
+          model: InventarioInfo, // Asegúrate de importar este modelo
+          as: 'Producto',        // Define este alias en las relaciones
+          attributes: ['CODIGO_BARRA']
         }
       ],
       order: [['FECHA_VENTA', 'DESC']]
     });
- 
+
     const ventasFormateadas = ventas.map(venta => ({
       ...venta.get({ plain: true }),
       VENDEDOR: venta.Vendedor ? venta.Vendedor.NOMBRE_USUARIO : 'Desconocido',
-      METODO_PAGO: venta.MetodoPago ? venta.MetodoPago.DESCRIPCION_METODO : 'Desconocido'
+      METODO_PAGO: venta.MetodoPago ? venta.MetodoPago.DESCRIPCION_METODO : 'Desconocido',
+      CODIGO_BARRA: venta.Producto ? venta.Producto.CODIGO_BARRA : 'Sin código'
     }));
     
     res.json(ventasFormateadas);
   } catch (error) {
+    console.error('Error:', error);
     res.status(500).json({ message: 'Error al obtener historial' });
   }
- });
+});
 
 
 module.exports = router;

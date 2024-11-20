@@ -12,7 +12,7 @@ Orden.hasMany(VentasInfo, { foreignKey: 'FK_ORDEN' });
 VentasInfo.belongsTo(Orden, { foreignKey: 'FK_ORDEN' });
 
 // Asociaciones de Ventas e Inventario
-VentasInfo.belongsTo(InventarioInfo, { foreignKey: 'FK_PRODUCTO' });
+VentasInfo.belongsTo(InventarioInfo, { foreignKey: 'FK_PRODUCTO', as: 'Producto' });
 InventarioInfo.hasMany(VentasInfo, { foreignKey: 'FK_PRODUCTO' });
 
 // Asociaciones de Ventas y Usuarios
