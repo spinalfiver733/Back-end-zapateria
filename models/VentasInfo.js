@@ -57,7 +57,12 @@ VentasInfo.init({
     FK_ORDEN: {
         type: DataTypes.INTEGER,
         allowNull: true
-    }
+    },
+    FK_ESTATUS_VENTA: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 1
+      }
 }, {
     sequelize,
     modelName: 'VentasInfo',

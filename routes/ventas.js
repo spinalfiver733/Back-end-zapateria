@@ -54,7 +54,8 @@ router.post('/', async (req, res) => {
           VENDEDOR,
           METODO_PAGO,
           FECHA_VENTA: new Date(),
-          OBSERVACIONES: productoObservaciones || OBSERVACIONES
+          OBSERVACIONES: productoObservaciones || OBSERVACIONES,
+          FK_ESTATUS_VENTA: 1 
         };
 
         console.log('Datos de la venta a insertar:', JSON.stringify(ventaData, null, 2));
@@ -202,6 +203,71 @@ router.get('/historial', async (req, res) => {
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ message: 'Error al obtener historial' });
+  }
+});
+
+router.put('/:ventaId', async (req, res) => {
+  const t = await sequelize.transaction();
+  
+  try {
+    const { ventaId } = req.params;
+    const { FK_ESTATUS_VENTA } = req.body;
+
+    // Validar que el ID de venta existe
+    const ventaExistente = await VentasInfo.findByPk(ventaId);
+    if (!ventaExistente) {
+      await t.rollback();
+      return res.status(404).json({ message: 'Venta no encontrada' });
+    }
+
+    // Validar que el nuevo estatus sea válido (1 o 2)
+    if (![1, 2].includes(FK_ESTATUS_VENTA)) {
+      await t.rollback();
+      return res.status(400).json({ 
+        message: 'Estado de venta inválido. Los valores permitidos son 1 (Finalizada) o 2 (Devolución)' 
+      });
+    }
+
+    // Actualizar el estado de la venta
+    await VentasInfo.update(
+      { 
+        FK_ESTATUS_VENTA,
+        // Podemos agregar más campos si se necesitan actualizar
+      },
+      { 
+        where: { PK_VENTA: ventaId },
+        transaction: t
+      }
+    );
+
+    // Log para debugging
+    console.log(`Venta ${ventaId} actualizada con estatus ${FK_ESTATUS_VENTA}`);
+
+    await t.commit();
+    
+    // Obtener la venta actualizada para confirmar los cambios
+    const ventaActualizada = await VentasInfo.findByPk(ventaId, {
+      include: [
+        {
+          model: PdvUsuarios,
+          as: 'Vendedor',
+          attributes: ['NOMBRE_USUARIO']
+        }
+      ]
+    });
+
+    res.json({ 
+      message: 'Estado de venta actualizado correctamente',
+      venta: ventaActualizada 
+    });
+
+  } catch (error) {
+    await t.rollback();
+    console.error('Error al actualizar estado de venta:', error);
+    res.status(500).json({ 
+      message: 'Error al actualizar estado de venta',
+      error: error.message 
+    });
   }
 });
 
