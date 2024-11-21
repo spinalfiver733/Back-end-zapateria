@@ -26,6 +26,11 @@ const PdvUsuarios = sequelize.define('PdvUsuarios', {
   NUMERO_USUARIO: {
     type: DataTypes.STRING(20),
     allowNull: false
+  },
+  ESTATUS_USUARIO: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: true
   }
 }, {
   tableName: 'pdv_usuarios',
