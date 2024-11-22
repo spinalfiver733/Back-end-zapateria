@@ -7,7 +7,7 @@ const SaldosFavor = require('../models/SaldosFavor');
 const PdvUsuarios = require('../models/usuariosInfo');
 const sequelize = require('../config/database');
 
-// POST: Registrar nueva devolución
+//Registrar nueva devolución
 router.post('/', async (req, res) => {
     const t = await sequelize.transaction();
     
@@ -58,7 +58,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT: Actualizar devolución con datos de cambio
+//Actualizar devolución con datos de cambio
 router.put('/:id', async (req, res) => {
     const t = await sequelize.transaction();
     
@@ -84,7 +84,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// GET: Obtener todas las devoluciones
+//Obtener todas las devoluciones
 router.get('/', async (req, res) => {
     try {
         const devoluciones = await DevolucionesInfo.findAll({
