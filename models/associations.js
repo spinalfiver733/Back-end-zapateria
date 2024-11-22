@@ -5,7 +5,7 @@ const PdvUsuarios = require('./usuariosInfo');
 const DevolucionesInfo = require('./DevolucionesInfo');
 const SaldosFavor = require('./SaldosFavor');
 const MetodosPago = require('./MetodosPago');
-
+const PdvRoles = require('./rolesInfo');
 
 // Asociaciones de Ordenes y Ventas
 Orden.hasMany(VentasInfo, { foreignKey: 'FK_ORDEN' });
@@ -43,11 +43,16 @@ VentasInfo.hasMany(SaldosFavor, { foreignKey: 'FK_VENTA_USO' });
 VentasInfo.belongsTo(MetodosPago, { foreignKey: 'METODO_PAGO', targetKey: 'PK_METODO', as: 'MetodoPago' });
 MetodosPago.hasMany(VentasInfo, { foreignKey: 'METODO_PAGO', sourceKey: 'PK_METODO' });
 
+// Asociación entre Usuarios y Roles
+PdvUsuarios.belongsTo(PdvRoles, { foreignKey: 'FK_ROL_USUARIO', as: 'Rol' });
+PdvRoles.hasMany(PdvUsuarios, { foreignKey: 'FK_ROL_USUARIO' });
+
 module.exports = {
     Orden,
     VentasInfo,
     InventarioInfo,
     PdvUsuarios,
     DevolucionesInfo,
-    SaldosFavor
+    SaldosFavor,
+    PdvRoles
 };

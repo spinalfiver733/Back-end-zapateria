@@ -1,11 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const PdvUsuarios = require('../models/usuariosInfo');
+const PdvRoles = require('../models/rolesInfo');
+//const 
 
 // Obtener todos los usuarios
   router.get('/', async (req, res) => {
     try {
-      const usuarios = await PdvUsuarios.findAll();
+      const usuarios = await PdvUsuarios.findAll({
+        include: [{
+          model: PdvRoles,
+          as: 'Rol',
+          attributes: ['DESCRIPCION_ROL']  
+        }],
+        attributes: {
+          exclude: ['FK_ROL_USUARIO'] 
+        }
+      });
       res.json(usuarios);
     } catch (error) {
       console.error('Error al obtener usuarios:', error);
