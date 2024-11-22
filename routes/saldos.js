@@ -3,7 +3,6 @@ const router = express.Router();
 const SaldosFavor = require('../models/SaldosFavor');
 const DevolucionesInfo = require('../models/DevolucionesInfo');
 const sequelize = require('../config/database');
-const { Op } = require('sequelize');
 
 // POST: Crear nuevo saldo a favor
 router.post('/', async (req, res) => {
@@ -60,7 +59,7 @@ router.get('/:codigo', async (req, res) => {
     }
 });
 
-// PUT: Actualizar estado del saldo (usar saldo)
+//Actualizar estado del saldo (usar saldo)
 router.put('/:codigo/usar', async (req, res) => {
     const t = await sequelize.transaction();
     
@@ -71,7 +70,8 @@ router.put('/:codigo/usar', async (req, res) => {
         const saldo = await SaldosFavor.findOne({
             where: {
                 CODIGO_UNICO: codigo,
-                ESTADO: 'activo'
+                ESTADO: 'activo',
+                ESTATUS_SALDO_VENTA: 1 // Saldo disponible
             },
             transaction: t
         });
@@ -82,7 +82,8 @@ router.put('/:codigo/usar', async (req, res) => {
 
         await saldo.update({
             ESTADO: 'usado',
-            FK_VENTA_USO
+            FK_VENTA_USO,
+            ESTATUS_SALDO_VENTA: 0 // Saldo ya no disponible
         }, { transaction: t });
 
         await t.commit();
@@ -95,7 +96,7 @@ router.put('/:codigo/usar', async (req, res) => {
     }
 });
 
-// GET: Obtener historial de saldos
+//Obtener historial de saldos
 router.get('/historial/todos', async (req, res) => {
     try {
         const saldos = await SaldosFavor.findAll({

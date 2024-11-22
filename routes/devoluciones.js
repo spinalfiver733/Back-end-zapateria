@@ -6,7 +6,6 @@ const VentasInfo = require('../models/VentasInfo');
 const SaldosFavor = require('../models/SaldosFavor');
 const PdvUsuarios = require('../models/usuariosInfo');
 const sequelize = require('../config/database');
-const { Op } = require('sequelize');
 
 // POST: Registrar nueva devolución
 router.post('/', async (req, res) => {
