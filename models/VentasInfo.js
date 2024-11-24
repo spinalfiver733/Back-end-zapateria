@@ -35,8 +35,12 @@ VentasInfo.init({
         allowNull: true
     },
     METODO_PAGO: {
-        type: DataTypes.STRING(20),
-        allowNull: true
+        type: DataTypes.INTEGER,  
+        allowNull: true,
+        references: {
+            model: 'metodos_pago',
+            key: 'PK_METODO'
+        }
     },
     FECHA_VENTA: {
         type: DataTypes.DATE,
