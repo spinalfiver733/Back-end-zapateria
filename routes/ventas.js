@@ -6,6 +6,7 @@ const PdvUsuarios = require('../models/usuariosInfo');  // Añade esta línea
 const sequelize = require('../config/database');
 const { Op } = require('sequelize');
 const MetodosPago = require('../models/MetodosPago');
+const EstatusVenta = require('../models/EstatusVenta');
 
 router.post('/', async (req, res) => {
     const t = await sequelize.transaction();
@@ -170,7 +171,8 @@ router.get('/historial', async (req, res) => {
         'COLOR',
         'PRECIO',
         'FECHA_VENTA',
-        'OBSERVACIONES'
+        'OBSERVACIONES',
+        'FK_ESTATUS_VENTA'
       ],
       include: [
         {
@@ -187,6 +189,11 @@ router.get('/historial', async (req, res) => {
           model: InventarioInfo, // Asegúrate de importar este modelo
           as: 'Producto',        // Define este alias en las relaciones
           attributes: ['CODIGO_BARRA']
+        },
+        {
+          model: EstatusVenta,
+          as: 'Estatus',
+          attributes: ['DESCRIPCION']
         }
       ],
       order: [['FECHA_VENTA', 'DESC']]
@@ -196,7 +203,8 @@ router.get('/historial', async (req, res) => {
       ...venta.get({ plain: true }),
       VENDEDOR: venta.Vendedor ? venta.Vendedor.NOMBRE_USUARIO : 'Desconocido',
       METODO_PAGO: venta.MetodoPago ? venta.MetodoPago.DESCRIPCION_METODO : 'Desconocido',
-      CODIGO_BARRA: venta.Producto ? venta.Producto.CODIGO_BARRA : 'Sin código'
+      CODIGO_BARRA: venta.Producto ? venta.Producto.CODIGO_BARRA : 'Sin código',
+      ESTATUS: venta.Estatus ? venta.Estatus.DESCRIPCION : 'Sin estatus'  // Agregar esta línea
     }));
     
     res.json(ventasFormateadas);
