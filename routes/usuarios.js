@@ -23,6 +23,28 @@ const PdvRoles = require('../models/rolesInfo');
       res.status(500).json({ message: error.message });
     }
   });
+  
+  router.get('/activos', async (req, res) => {
+    try {
+      const usuarios = await PdvUsuarios.findAll({
+        where: {
+          ESTATUS_USUARIO: 1  // Solo usuarios activos
+        },
+        include: [{
+          model: PdvRoles,
+          as: 'Rol',
+          attributes: ['DESCRIPCION_ROL']  
+        }],
+        attributes: {
+          exclude: ['FK_ROL_USUARIO'] 
+        }
+      });
+      res.json(usuarios);
+    } catch (error) {
+      console.error('Error al obtener usuarios activos:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
 
 // Crear un nuevo usuario
   router.post('/', async (req, res) => {
