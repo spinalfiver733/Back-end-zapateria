@@ -162,7 +162,19 @@ router.get('/orden/:ordenId', async (req, res) => {
 
 router.get('/historial', async (req, res) => {
   try {
+    const { estado } = req.query;
+    let whereClause = {};
+
+    if (estado) {
+      if (estado === 'FINALIZADA') {
+        whereClause.FK_ESTATUS_VENTA = 1;
+      } else if (estado === 'DEVOLUCIÓN') {
+        whereClause.FK_ESTATUS_VENTA = 2;
+      }
+    }
+
     const ventas = await VentasInfo.findAll({
+      where: whereClause,
       attributes: [
         'PK_VENTA',
         'MARCA', 
@@ -186,8 +198,8 @@ router.get('/historial', async (req, res) => {
           attributes: ['DESCRIPCION_METODO']
         },
         {
-          model: InventarioInfo, // Asegúrate de importar este modelo
-          as: 'Producto',        // Define este alias en las relaciones
+          model: InventarioInfo,
+          as: 'Producto',
           attributes: ['CODIGO_BARRA']
         },
         {
@@ -204,7 +216,7 @@ router.get('/historial', async (req, res) => {
       VENDEDOR: venta.Vendedor ? venta.Vendedor.NOMBRE_USUARIO : 'Desconocido',
       METODO_PAGO: venta.MetodoPago ? venta.MetodoPago.DESCRIPCION_METODO : 'Desconocido',
       CODIGO_BARRA: venta.Producto ? venta.Producto.CODIGO_BARRA : 'Sin código',
-      ESTATUS: venta.Estatus ? venta.Estatus.DESCRIPCION : 'Sin estatus'  // Agregar esta línea
+      ESTATUS: venta.Estatus ? venta.Estatus.DESCRIPCION : 'Sin estatus'
     }));
     
     res.json(ventasFormateadas);
