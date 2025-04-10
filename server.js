@@ -11,6 +11,7 @@ const usuariosRoutes = require('./routes/usuarios');
 const rolesRoutes = require('./routes/roles');
 const devolucionesRoutes = require('./routes/devoluciones');
 const saldosRoutes = require('./routes/saldos');
+const codigoBarrasRoutes = require('./routes/codigoBarras');
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use('/api/usuarios', usuariosRoutes); // Agrega las nuevas rutas
 app.use('/api/roles' ,rolesRoutes );
 app.use('/api/devoluciones', devolucionesRoutes);
 app.use('/api/saldos', saldosRoutes);
+app.use('/api/codigo-barras', codigoBarrasRoutes); 
 
 app.get('/api/test', (req, res) => {
   res.json({ message: "Backend conectado exitosamente" });
