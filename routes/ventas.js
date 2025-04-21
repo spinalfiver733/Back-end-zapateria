@@ -109,7 +109,7 @@ router.get('/', async (req, res) => {
       break;
     case 'anual':
       whereClause.FECHA_VENTA = {
-        [Op.gte]: new Date(now.getFullYear(), 0, 1)
+        [Op.gte]: new Date(now.getFullYear(), now.getMonth() - 12, 1)
       };
       break;
   }
@@ -117,17 +117,25 @@ router.get('/', async (req, res) => {
   try {
     const ventas = await VentasInfo.findAll({
       where: whereClause,
-      attributes: ['MARCA', 'TALLA', 'COLOR', 'PRECIO', 'METODO_PAGO', 'FECHA_VENTA', 'OBSERVACIONES'],
-      include: [{
-        model: PdvUsuarios,
-        as: 'Vendedor',
-        attributes: ['NOMBRE_USUARIO']
-      }]
+      attributes: ['PK_VENTA', 'MARCA', 'TALLA', 'COLOR', 'PRECIO', 'METODO_PAGO', 'FECHA_VENTA', 'OBSERVACIONES', 'FK_PRODUCTO'],
+      include: [
+        {
+          model: PdvUsuarios,
+          as: 'Vendedor',
+          attributes: ['NOMBRE_USUARIO']
+        },
+        {
+          model: InventarioInfo,
+          as: 'Producto',
+          attributes: ['CODIGO_BARRA']
+        }
+      ]
     });
     
     const ventasFormateadas = ventas.map(venta => ({
       ...venta.get({ plain: true }),
-      VENDEDOR: venta.Vendedor ? venta.Vendedor.NOMBRE_USUARIO : 'Desconocido'
+      VENDEDOR: venta.Vendedor ? venta.Vendedor.NOMBRE_USUARIO : 'Desconocido',
+      CODIGO_BARRA: venta.Producto ? venta.Producto.CODIGO_BARRA : 'Sin código'
     }));
 
     console.log('Ventas encontradas:', ventasFormateadas.length);
@@ -137,7 +145,6 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: 'Error al obtener datos de ventas' });
   }
 });
-
 router.get('/orden/:ordenId', async (req, res) => {
   try {
     const venta = await VentasInfo.findOne({
