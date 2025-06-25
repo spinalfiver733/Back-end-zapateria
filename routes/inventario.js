@@ -175,4 +175,36 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// Ruta para verificar si un código de barras ya existe
+router.get('/verificar-codigo/:codigoBarras', async (req, res) => {
+  try {
+    const { codigoBarras } = req.params;
+    
+    const productoExistente = await InventarioInfo.findOne({
+      where: {
+        CODIGO_BARRA: codigoBarras,
+        FK_ESTATUS_PRODUCTO: 1 // Solo productos activos en inventario
+      },
+      attributes: ['PK_INVENTARIO', 'MARCA', 'MODELO', 'COLOR', 'TALLA', 'CODIGO_BARRA']
+    });
+
+    if (productoExistente) {
+      res.json({ 
+        existe: true, 
+        producto: productoExistente 
+      });
+    } else {
+      res.json({ 
+        existe: false 
+      });
+    }
+  } catch (error) {
+    console.error('Error al verificar código de barras:', error);
+    res.status(500).json({ 
+      message: 'Error al verificar el código de barras',
+      error: error.message 
+    });
+  }
+});
+
 module.exports = router;
