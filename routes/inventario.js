@@ -180,29 +180,52 @@ router.get('/verificar-codigo/:codigoBarras', async (req, res) => {
   try {
     const { codigoBarras } = req.params;
     
+    console.log('🔍 Backend: Verificando código de barras:', codigoBarras);
+    
+    // Validar que el código tenga el formato correcto
+    if (!codigoBarras || codigoBarras.trim().length !== 6) {
+      console.log('❌ Backend: Código inválido (no tiene 6 dígitos)');
+      return res.status(400).json({ 
+        existe: false, 
+        error: 'Código de barras debe tener 6 dígitos',
+        codigo: codigoBarras
+      });
+    }
+    
     const productoExistente = await InventarioInfo.findOne({
       where: {
-        CODIGO_BARRA: codigoBarras,
-        FK_ESTATUS_PRODUCTO: 1 // Solo productos activos en inventario
+        CODIGO_BARRA: codigoBarras.trim()
       },
-      attributes: ['PK_INVENTARIO', 'MARCA', 'MODELO', 'COLOR', 'TALLA', 'CODIGO_BARRA']
+      attributes: ['PK_PRODUCTO', 'MARCA', 'MODELO', 'COLOR', 'TALLA', 'CODIGO_BARRA'] // Usando PK_PRODUCTO
     });
 
+    console.log('📋 Backend: Producto encontrado:', productoExistente ? 'SÍ' : 'NO');
+    
     if (productoExistente) {
+      console.log('📋 Backend: Detalles del producto:', JSON.stringify(productoExistente.toJSON(), null, 2));
+      
       res.json({ 
         existe: true, 
-        producto: productoExistente 
+        producto: productoExistente,
+        mensaje: 'Código ya existe en inventario'
       });
     } else {
+      console.log('✅ Backend: Código disponible');
       res.json({ 
-        existe: false 
+        existe: false,
+        codigo: codigoBarras,
+        mensaje: 'Código disponible'
       });
     }
   } catch (error) {
-    console.error('Error al verificar código de barras:', error);
+    console.error('💥 Backend: Error al verificar código de barras:', error);
+    
     res.status(500).json({ 
+      existe: false,
+      error: true,
       message: 'Error al verificar el código de barras',
-      error: error.message 
+      details: error.message,
+      codigo: req.params.codigoBarras
     });
   }
 });
