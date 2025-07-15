@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const VentasInfo = require('../models/VentasInfo');
 const InventarioInfo = require('../models/InventarioInfo');
-const PdvUsuarios = require('../models/usuariosInfo');  // Añade esta línea
+const PdvUsuarios = require('../models/usuariosInfo'); 
 const sequelize = require('../config/database');
 const { Op } = require('sequelize');
 const MetodosPago = require('../models/MetodosPago');
@@ -28,7 +28,7 @@ router.post('/', async (req, res) => {
       const productosInventario = await InventarioInfo.findAll({
         where: { 
           PK_PRODUCTO: productosIds,
-          FK_ESTATUS_PRODUCTO: 3  // Asumiendo que 3 es "En venta"
+          FK_ESTATUS_PRODUCTO: 3  //En venta
         }
       }, { transaction: t });
 
@@ -87,8 +87,13 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/', async (req, res) => {
-  const { periodo } = req.query;
+  const { periodo, soloFinalizadas } = req.query;
+
   let whereClause = {};
+
+  if (soloFinalizadas === 'true') {
+    whereClause.FK_ESTATUS_VENTA = 1;
+  }
 
   const now = new Date();
   switch(periodo) {
@@ -131,20 +136,20 @@ router.get('/', async (req, res) => {
         }
       ]
     });
-    
+
     const ventasFormateadas = ventas.map(venta => ({
       ...venta.get({ plain: true }),
       VENDEDOR: venta.Vendedor ? venta.Vendedor.NOMBRE_USUARIO : 'Desconocido',
       CODIGO_BARRA: venta.Producto ? venta.Producto.CODIGO_BARRA : 'Sin código'
     }));
 
-    console.log('Ventas encontradas:', ventasFormateadas.length);
     res.json(ventasFormateadas);
   } catch (error) {
     console.error('Error fetching ventas:', error);
     res.status(500).json({ message: 'Error al obtener datos de ventas' });
   }
 });
+
 router.get('/orden/:ordenId', async (req, res) => {
   try {
     const venta = await VentasInfo.findOne({
