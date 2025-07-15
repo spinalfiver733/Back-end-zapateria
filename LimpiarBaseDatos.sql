@@ -1,4 +1,7 @@
 -- Actualizar el estado en inventario_info
+
+SET SQL_SAFE_UPDATES = 0;
+
 UPDATE inventario_info
 SET FK_ESTATUS_PRODUCTO = 1;
 
@@ -13,6 +16,6 @@ DELETE FROM ventas_info;
 
 DELETE FROM ordenes;
 
+DELETE FROM inventario_info;
 
 
- 
