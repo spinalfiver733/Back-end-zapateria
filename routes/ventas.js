@@ -10,6 +10,18 @@ const EstatusVenta = require('../models/EstatusVenta');
 
 router.post('/', async (req, res) => {
     const t = await sequelize.transaction();
+
+      const { VENDEDOR, METODO_PAGO, OBSERVACIONES, productos } = req.body;
+z
+      if (!VENDEDOR) {
+        return res.status(400).json({ message: 'El campo VENDEDOR es obligatorio' });
+      }
+      if (!METODO_PAGO) {
+        return res.status(400).json({ message: 'El campo METODO_PAGO es obligatorio' });
+      }
+      if (!productos || !Array.isArray(productos) || productos.length === 0) {
+        return res.status(400).json({ message: 'Debe incluir al menos un producto' });
+      }
   
     try {
       const { VENDEDOR, METODO_PAGO, OBSERVACIONES, productos } = req.body;
