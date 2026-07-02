@@ -186,7 +186,7 @@ router.get('/orden/:ordenId', async (req, res) => {
 
 router.get('/historial', async (req, res) => {
   try {
-    const { estado } = req.query;
+    const { estado, fecha} = req.query;
     let whereClause = {};
 
     if (estado) {
@@ -195,6 +195,15 @@ router.get('/historial', async (req, res) => {
       } else if (estado === 'DEVOLUCIÓN') {
         whereClause.FK_ESTATUS_VENTA = 2;
       }
+    }
+
+    if (fecha) {
+      const { Op } = require('sequelize');
+      
+      const inicio = new Date(`${fecha}T00:00:00`);
+      const fin = new Date(`${fecha}T23:59:59.999`);
+            
+      whereClause.FECHA_VENTA = { [Op.between]: [inicio, fin] };
     }
 
     const ventas = await VentasInfo.findAll({
