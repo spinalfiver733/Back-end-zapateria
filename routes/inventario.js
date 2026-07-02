@@ -105,11 +105,11 @@ router.get('/verificar-codigo/:codigoBarras', async (req, res) => {
   try {
     const { codigoBarras } = req.params;
 
-    console.log('🔍 Backend: Verificando código de barras:', codigoBarras);
+    console.log('Backend: Verificando código de barras:', codigoBarras);
 
     // Validar que el código tenga el formato correcto
     if (!codigoBarras || codigoBarras.trim().length !== 6) {
-      console.log('❌ Backend: Código inválido (no tiene 6 dígitos)');
+      console.log('Backend: Código inválido (no tiene 6 dígitos)');
       return res.status(400).json({
         existe: false,
         error: 'Código de barras debe tener 6 dígitos',
@@ -124,10 +124,10 @@ router.get('/verificar-codigo/:codigoBarras', async (req, res) => {
       attributes: ['PK_PRODUCTO', 'MARCA', 'MODELO', 'COLOR', 'TALLA', 'CODIGO_BARRA'] // Usando PK_PRODUCTO
     });
 
-    console.log('📋 Backend: Producto encontrado:', productoExistente ? 'SÍ' : 'NO');
+    console.log('Backend: Producto encontrado:', productoExistente ? 'SÍ' : 'NO');
 
     if (productoExistente) {
-      console.log('📋 Backend: Detalles del producto:', JSON.stringify(productoExistente.toJSON(), null, 2));
+      console.log('Backend: Detalles del producto:', JSON.stringify(productoExistente.toJSON(), null, 2));
 
       res.json({
         existe: true,
@@ -135,7 +135,7 @@ router.get('/verificar-codigo/:codigoBarras', async (req, res) => {
         mensaje: 'Código ya existe en inventario'
       });
     } else {
-      console.log('✅ Backend: Código disponible');
+      console.log('Backend: Código disponible');
       res.json({
         existe: false,
         codigo: codigoBarras,
