@@ -216,6 +216,7 @@ router.get('/historial', async (req, res) => {
         'COLOR',
         'PRECIO',
         'FECHA_VENTA',
+        'METODO_PAGO',
         'OBSERVACIONES',
         'FK_ESTATUS_VENTA'
       ],

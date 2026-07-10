@@ -108,11 +108,11 @@ router.get('/verificar-codigo/:codigoBarras', async (req, res) => {
     console.log('Backend: Verificando código de barras:', codigoBarras);
 
     // Validar que el código tenga el formato correcto
-    if (!codigoBarras || codigoBarras.trim().length !== 6) {
-      console.log('Backend: Código inválido (no tiene 6 dígitos)');
+    if (!codigoBarras || codigoBarras.trim().length === 0) {
+      console.log('Backend: Código inválido');
       return res.status(400).json({
         existe: false,
-        error: 'Código de barras debe tener 6 dígitos',
+        error: 'Código de barras sin digitos',
         codigo: codigoBarras
       });
     }
