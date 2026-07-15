@@ -241,6 +241,26 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'Todos los campos son requeridos' });
     }
 
+    // Buscamos si ya existe un producto ACTIVO con ese código de barras
+    const productoExistente = await InventarioInfo.findOne({
+      where: {
+        CODIGO_BARRA: codigo_barra,
+        FK_ESTATUS_PRODUCTO: 1
+      }
+    });
+
+    if (productoExistente) {
+      // Ya existe: sumamos 1 al stock actual
+      productoExistente.STOCK += 1;
+      await productoExistente.save();
+
+      return res.status(200).json({
+        message: 'Código ya existía, se actualizó el stock',
+        producto: productoExistente
+      });
+    }
+
+    // No existe: creamos el registro nuevo con stock inicial en 1
     const nuevoProducto = await InventarioInfo.create({
       MARCA: marca,
       MODELO: modelo,
@@ -248,6 +268,7 @@ router.post('/', async (req, res) => {
       COLOR: color,
       PRECIO: parseFloat(precio),
       CODIGO_BARRA: codigo_barra,
+      STOCK: 1,
       FECHA_INGRESO: new Date(),
       FK_ESTATUS_PRODUCTO: 1
     });
