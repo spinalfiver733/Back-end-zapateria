@@ -31,11 +31,6 @@ const InventarioInfo = sequelize.define('InventarioInfo', {
     type: DataTypes.DATE,
     allowNull: false
   },
-  FK_ESTATUS_PRODUCTO: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    defaultValue: 1
-  },
   CODIGO_BARRA:{
     type: DataTypes.STRING(255),
     allowNull: false

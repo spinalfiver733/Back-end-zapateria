@@ -6,7 +6,7 @@ const PdvUsuarios = require('../models/usuariosInfo');
 const MetodosPago = require('../models/MetodosPago');
 
 
-// Nueva ruta para buscar producto vendido por código de barras (DEBE IR ANTES DE /:id)
+// Nueva ruta para buscar producto vendido por código de barras
 router.get('/vendido/:codigoBarras', async (req, res) => {
   try {
     const { codigoBarras } = req.params;
@@ -21,17 +21,17 @@ router.get('/vendido/:codigoBarras', async (req, res) => {
         {
           model: VentasInfo,
           required: true,
-          attributes: ['PK_VENTA', 'FECHA_VENTA', 'PRECIO'], // Solo lo necesario
+          attributes: ['PK_VENTA', 'FECHA_VENTA', 'PRECIO'],
           include: [
             {
               model: PdvUsuarios,
-              as: 'Vendedor', // Alias configurado en asociaciones
-              attributes: ['NOMBRE_USUARIO'] // Obtenemos el nombre del vendedor
+              as: 'Vendedor',
+              attributes: ['NOMBRE_USUARIO']
             },
             {
               model: MetodosPago,
-              as: 'MetodoPago', // Alias definido en associations.js
-              attributes: ['DESCRIPCION_METODO'] // Obtenemos la descripción del método
+              as: 'MetodoPago',
+              attributes: ['DESCRIPCION_METODO']
             }
           ]
         }
@@ -155,74 +155,13 @@ router.get('/verificar-codigo/:codigoBarras', async (req, res) => {
   }
 });
 
-// Ruta para obtener productos sin procesar (estatus 3)
-router.get('/sin-procesar', async (req, res) => {
-  try {
-    const productosSinProcesar = await InventarioInfo.findAll({
-      where: {
-        FK_ESTATUS_PRODUCTO: 3
-      },
-      order: [['FECHA_INGRESO', 'DESC']] // Ordenar por fecha más reciente primero
-    });
-
-    console.log(`Productos sin procesar encontrados: ${productosSinProcesar.length}`);
-    res.json(productosSinProcesar);
-  } catch (error) {
-    console.error('Error al obtener productos sin procesar:', error);
-    res.status(500).json({
-      message: 'Error al obtener productos sin procesar',
-      error: error.message
-    });
-  }
-});
-
-// Ruta para regresar TODOS los productos sin procesar al inventario (estatus 3 -> 1)
-router.put('/regresar-todos', async (req, res) => {
-  try {
-    // Primero verificamos cuántos productos hay en estatus 3
-    const productosEnEstatus3 = await InventarioInfo.count({
-      where: {
-        FK_ESTATUS_PRODUCTO: 3
-      }
-    });
-
-    if (productosEnEstatus3 === 0) {
-      return res.status(404).json({
-        message: 'No hay productos sin procesar para regresar al inventario'
-      });
-    }
-
-    // Actualizar todos los productos de estatus 3 a estatus 1
-    const [filasActualizadas] = await InventarioInfo.update(
-      { FK_ESTATUS_PRODUCTO: 1 },
-      {
-        where: { FK_ESTATUS_PRODUCTO: 3 },
-        returning: true // Para PostgreSQL, en MySQL no es necesario
-      }
-    );
-
-    console.log(`Productos regresados al inventario: ${filasActualizadas}`);
-
-    res.json({
-      message: `Los productos han sido regresados al inventario exitosamente`,
-      productosActualizados: filasActualizadas
-    });
-
-  } catch (error) {
-    console.error('Error al regresar productos al inventario:', error);
-    res.status(500).json({
-      message: 'Error al regresar productos al inventario',
-      error: error.message
-    });
-  }
-});
-
 // Ruta para obtener todos los productos del inventario
 router.get('/', async (req, res) => {
   try {
     const inventario = await InventarioInfo.findAll({
       where: {
-        FK_ESTATUS_PRODUCTO: 1
+        STOCK: { [Op.gt]: 0 }
+        //FK_ESTATUS_PRODUCTO: 1
       }
     });
     res.json(inventario);
@@ -241,16 +180,11 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'Todos los campos son requeridos' });
     }
 
-    // Buscamos si ya existe un producto ACTIVO con ese código de barras
     const productoExistente = await InventarioInfo.findOne({
-      where: {
-        CODIGO_BARRA: codigo_barra,
-        FK_ESTATUS_PRODUCTO: 1
-      }
+      where: { CODIGO_BARRA: codigo_barra }
     });
 
     if (productoExistente) {
-      // Ya existe: sumamos 1 al stock actual
       productoExistente.STOCK += 1;
       await productoExistente.save();
 
@@ -260,7 +194,6 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // No existe: creamos el registro nuevo con stock inicial en 1
     const nuevoProducto = await InventarioInfo.create({
       MARCA: marca,
       MODELO: modelo,
@@ -269,33 +202,13 @@ router.post('/', async (req, res) => {
       PRECIO: parseFloat(precio),
       CODIGO_BARRA: codigo_barra,
       STOCK: 1,
-      FECHA_INGRESO: new Date(),
-      FK_ESTATUS_PRODUCTO: 1
+      FECHA_INGRESO: new Date()
     });
 
     res.status(201).json(nuevoProducto);
   } catch (error) {
     console.error('Error al agregar producto:', error);
     res.status(500).json({ message: 'Error al agregar el producto al inventario' });
-  }
-});
-
-// Ruta para actualizar el estado de un producto
-router.put('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { FK_ESTATUS_PRODUCTO } = req.body;
-
-    const producto = await InventarioInfo.findByPk(id);
-    if (!producto) {
-      return res.status(404).json({ message: 'Producto no encontrado' });
-    }
-
-    await producto.update({ FK_ESTATUS_PRODUCTO });
-    res.json(producto);
-  } catch (error) {
-    console.error('Error al actualizar el producto:', error);
-    res.status(500).json({ message: 'Error al actualizar el producto' });
   }
 });
 
