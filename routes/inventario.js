@@ -4,7 +4,7 @@ const InventarioInfo = require('../models/InventarioInfo');
 const VentasInfo = require('../models/VentasInfo');
 const PdvUsuarios = require('../models/usuariosInfo');
 const MetodosPago = require('../models/MetodosPago');
-
+const { Op } = require('sequelize');
 
 // Nueva ruta para buscar producto vendido por código de barras
 router.get('/vendido/:codigoBarras', async (req, res) => {
