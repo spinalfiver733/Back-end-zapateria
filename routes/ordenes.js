@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Orden, VentasInfo, InventarioInfo } = require('../models/associations');
 const sequelize = require('../config/database');
+const { Op } = require('sequelize');
 
 // Validación de entrada
 const validateOrderInput = (body) => {
@@ -13,22 +14,22 @@ const validateOrderInput = (body) => {
 
 // Crear una nueva orden con múltiples productos
 router.post('/', async (req, res) => {
-    const { VENDEDOR, METODO_PAGO, OBSERVACIONES, productos } = req.body;
+  const { VENDEDOR, METODO_PAGO, OBSERVACIONES, productos } = req.body;
     
-    if (!VENDEDOR) {
-      return res.status(400).json({ message: 'El campo VENDEDOR es obligatorio' });
-    }
-    if (!METODO_PAGO) {
-      return res.status(400).json({ message: 'El campo METODO_PAGO es obligatorio' });
-    }
-    if (!productos || !Array.isArray(productos) || productos.length === 0) {
-      return res.status(400).json({ message: 'Debe incluir al menos un producto' });
-    }
+  if (!VENDEDOR) {
+    return res.status(400).json({ message: 'El campo VENDEDOR es obligatorio' });
+  }
+  if (!METODO_PAGO) {
+    return res.status(400).json({ message: 'El campo METODO_PAGO es obligatorio' });
+  }
+  if (!productos || !Array.isArray(productos) || productos.length === 0) {
+    return res.status(400).json({ message: 'Debe incluir al menos un producto' });
+  }
+
   const t = await sequelize.transaction();
 
   try {
     validateOrderInput(req.body);
-    const { VENDEDOR, METODO_PAGO, OBSERVACIONES, productos } = req.body;
 
     // Crear la orden
     const nuevaOrden = await Orden.create({
@@ -36,7 +37,7 @@ router.post('/', async (req, res) => {
       VENDEDOR,
       METODO_PAGO,
       OBSERVACIONES,
-      TOTAL: 0 // Se actualizará después
+      TOTAL: 0
     }, { transaction: t });
 
     let total = 0;
@@ -46,17 +47,18 @@ router.post('/', async (req, res) => {
     for (const producto of productos) {
       const { FK_PRODUCTO, PRECIO, MARCA, OBSERVACIONES: productoObservaciones } = producto;
 
-      // Verificar si el producto existe y está en estado "En venta" (3)
+      // 1. Verificar si existe y si hay STOCK disponible (> 0)
       const inventarioProducto = await InventarioInfo.findOne({
         where: { 
           PK_PRODUCTO: FK_PRODUCTO,
-          FK_ESTATUS_PRODUCTO: 3
-        }
-      }, { transaction: t });
+          STOCK: { [Op.gt]: 0 }
+        },
+        transaction: t
+      });
 
       if (!inventarioProducto) {
         await t.rollback();
-        return res.status(404).json({ message: `Producto ${FK_PRODUCTO} no encontrado o no está en estado de venta` });
+        return res.status(404).json({ message: `Producto ${FK_PRODUCTO} no encontrado o sin stock suficiente` });
       }
 
       // Preparar datos para VentasInfo
@@ -71,19 +73,16 @@ router.post('/', async (req, res) => {
         METODO_PAGO,
         FECHA_VENTA: new Date(),
         OBSERVACIONES: productoObservaciones || OBSERVACIONES || '',
-        MARCA: MARCA || inventarioProducto.MARCA // Aseguramos que MARCA se incluya
+        MARCA: MARCA || inventarioProducto.MARCA
       });
 
-      // Actualizar el estado del producto en el inventario a "Vendido" (2)
-      await InventarioInfo.update(
-        { FK_ESTATUS_PRODUCTO: 2 },
-        { where: { PK_PRODUCTO: FK_PRODUCTO }, transaction: t }
-      );
+      // 2. Decrementar el STOCK del producto
+      await inventarioProducto.decrement('STOCK', { by: 1, transaction: t });
 
       total += parseFloat(PRECIO || inventarioProducto.PRECIO);
     }
 
-    // Crear todas las VentasInfo de una vez
+    // Crear todas las VentasInfo
     await VentasInfo.bulkCreate(ventasInfoData, { transaction: t });
 
     // Actualizar el total de la orden

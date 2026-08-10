@@ -161,7 +161,6 @@ router.get('/', async (req, res) => {
     const inventario = await InventarioInfo.findAll({
       where: {
         STOCK: { [Op.gt]: 0 }
-        //FK_ESTATUS_PRODUCTO: 1
       }
     });
     res.json(inventario);
