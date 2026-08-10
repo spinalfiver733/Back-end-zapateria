@@ -2,9 +2,6 @@
 
 SET SQL_SAFE_UPDATES = 0;
 
-UPDATE inventario_info
-SET FK_ESTATUS_PRODUCTO = 1;
-
 -- Borrar los datos en las tablas en el orden correcto
 DELETE FROM saldos_favor;
 
