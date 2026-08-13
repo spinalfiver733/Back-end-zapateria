@@ -11,11 +11,9 @@ router.get('/vendido/:codigoBarras', async (req, res) => {
   try {
     const { codigoBarras } = req.params;
     console.log('Buscando código de barras:', codigoBarras);
-
     const producto = await InventarioInfo.findOne({
       where: {
-        CODIGO_BARRA: codigoBarras,
-        FK_ESTATUS_PRODUCTO: 2 // Estado "vendido"
+        CODIGO_BARRA: codigoBarras
       },
       include: [
         {

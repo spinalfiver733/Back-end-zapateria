@@ -42,11 +42,12 @@ router.post('/', async (req, res) => {
             FECHA_DEVOLUCION: new Date()
         }, { transaction: t });
 
-        // Actualizar estado del producto
-        await InventarioInfo.update(
-            { FK_ESTATUS_PRODUCTO: ESTADO_FINAL },
-            { where: { PK_PRODUCTO: FK_PRODUCTO }, transaction: t }
-        );
+        if (MOTIVO !== 'defecto_fabrica') {
+            await InventarioInfo.increment(
+                { STOCK: 1 },
+                { where: { PK_PRODUCTO: FK_PRODUCTO }, transaction: t }
+            );
+        }
 
         await t.commit();
         res.status(201).json(nuevaDevolucion);
@@ -115,13 +116,12 @@ router.get('/', async (req, res) => {
     }
 });
 
-// GET: Buscar producto vendido por código de barras
+/*
 router.get('/producto/:codigoBarras', async (req, res) => {
     try {
         const producto = await InventarioInfo.findOne({
             where: {
-                CODIGO_BARRA: req.params.codigoBarras,
-                FK_ESTATUS_PRODUCTO: 2 // Vendido
+                CODIGO_BARRA: req.params.codigoBarras
             },
             include: [{
                 model: VentasInfo,
@@ -139,5 +139,6 @@ router.get('/producto/:codigoBarras', async (req, res) => {
         res.status(500).json({ message: 'Error al buscar producto', error: error.message });
     }
 });
+*/
 
 module.exports = router;
