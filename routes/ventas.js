@@ -108,28 +108,35 @@ router.get('/', async (req, res) => {
   }
 
   const now = new Date();
-  switch(periodo) {
+  let fechaInicio = null;
+  let fechaFin = now;
+
+  switch (periodo) {
     case 'hoy':
-      whereClause.FECHA_VENTA = {
-        [Op.gte]: new Date(now.getFullYear(), now.getMonth(), now.getDate())
-      };
+      fechaInicio = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       break;
-    case 'semana':
-      whereClause.FECHA_VENTA = {
-        [Op.gte]: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7)
-      };
+
+    case 'semana': {
+      // getDay(): 0 = domingo, 1 = lunes, ..., 6 = sábado
+      const diaSemana = now.getDay();
+      // Si es domingo (0), retrocedemos 6 días para llegar al lunes; si no, retrocedemos (diaSemana - 1)
+      const diasDesdeLunes = diaSemana === 0 ? 6 : diaSemana - 1;
+      fechaInicio = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diasDesdeLunes);
       break;
+    }
+
     case 'mensual':
-      whereClause.FECHA_VENTA = {
-        [Op.gte]: new Date(now.getFullYear(), now.getMonth(), 1)
-      };
+      fechaInicio = new Date(now.getFullYear(), now.getMonth(), 1);
       break;
-    case 'anual':
-      whereClause.FECHA_VENTA = {
-        [Op.gte]: new Date(now.getFullYear(), now.getMonth() - 12, 1)
-      };
-      break;
+
+    default:
+      return res.status(400).json({ message: 'Periodo inválido. Los valores permitidos son: hoy, semana, mensual' });
   }
+
+  whereClause.FECHA_VENTA = {
+    [Op.gte]: fechaInicio,
+    [Op.lte]: fechaFin
+  };
 
   try {
     const ventas = await VentasInfo.findAll({
@@ -155,7 +162,12 @@ router.get('/', async (req, res) => {
       CODIGO_BARRA: venta.Producto ? venta.Producto.CODIGO_BARRA : 'Sin código'
     }));
 
-    res.json(ventasFormateadas);
+    res.json({
+      ventas: ventasFormateadas,
+      periodo,
+      fechaInicio,
+      fechaFin
+    });
   } catch (error) {
     console.error('Error fetching ventas:', error);
     res.status(500).json({ message: 'Error al obtener datos de ventas' });
