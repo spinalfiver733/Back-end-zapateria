@@ -14,8 +14,6 @@ const validateOrderInput = (body) => {
 
 router.post('/', async (req, res) => {
   const { VENDEDOR, METODO_PAGO, OBSERVACIONES, productos } = req.body;
-  // VENDEDOR y METODO_PAGO aquí se quedan como datos "resumen" de la orden
-  // (quién la encabezó), pero ya no se usan para llenar cada VentasInfo.
 
   if (!VENDEDOR) {
     return res.status(400).json({ message: 'El campo VENDEDOR es obligatorio' });
@@ -44,9 +42,6 @@ router.post('/', async (req, res) => {
     const ventasInfoData = [];
 
     for (const producto of productos) {
-      // ✅ Se extrae VENDEDOR, METODO_PAGO y OBSERVACIONES de CADA producto,
-      // con fallback al valor de la orden solo si el producto no manda nada
-      // (undefined/null), no si viene como string vacío.
       const {
         FK_PRODUCTO,
         PRECIO,
@@ -76,12 +71,9 @@ router.post('/', async (req, res) => {
         MODELO: inventarioProducto.MODELO,
         COLOR: inventarioProducto.COLOR,
         PRECIO: PRECIO || inventarioProducto.PRECIO,
-        // ✅ Ahora cada renglón respeta lo que el frontend mandó por producto,
-        // y solo usa el valor de la orden si el producto no trae nada (?? en vez de ||)
         VENDEDOR: productoVendedor ?? VENDEDOR,
         METODO_PAGO: productoMetodoPago ?? METODO_PAGO,
         FECHA_VENTA: new Date(),
-        // ✅ ?? en vez de || : respeta explícitamente un string vacío ''
         OBSERVACIONES: productoObservaciones ?? OBSERVACIONES ?? '',
         MARCA: MARCA || inventarioProducto.MARCA
       });
