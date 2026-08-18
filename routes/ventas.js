@@ -12,7 +12,7 @@ router.post('/', async (req, res) => {
     const t = await sequelize.transaction();
 
       const { VENDEDOR, METODO_PAGO, OBSERVACIONES, productos } = req.body;
-z
+
       if (!VENDEDOR) {
         return res.status(400).json({ message: 'El campo VENDEDOR es obligatorio' });
       }
