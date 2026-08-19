@@ -44,22 +44,17 @@ CREATE TABLE `devoluciones_info` (
   CONSTRAINT `devoluciones_info_ibfk_2` FOREIGN KEY (`FK_VENTA`) REFERENCES `ventas_info` (`PK_VENTA`),
   CONSTRAINT `devoluciones_info_ibfk_3` FOREIGN KEY (`FK_VENDEDOR`) REFERENCES `pdv_usuarios` (`ID_USUARIO`),
   CONSTRAINT `devoluciones_info_ibfk_4` FOREIGN KEY (`FK_VENTA_NUEVA`) REFERENCES `ventas_info` (`PK_VENTA`)
-) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=85 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `estados_producto`
+-- Dumping data for table `devoluciones_info`
 --
 
-DROP TABLE IF EXISTS `estados_producto`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `estados_producto` (
-  `id_estado` int NOT NULL,
-  `descripcion` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id_estado`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+LOCK TABLES `devoluciones_info` WRITE;
+/*!40000 ALTER TABLE `devoluciones_info` DISABLE KEYS */;
+/*!40000 ALTER TABLE `devoluciones_info` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `estatus_venta`
@@ -74,6 +69,16 @@ CREATE TABLE `estatus_venta` (
   PRIMARY KEY (`PK_ESTATUS`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `estatus_venta`
+--
+
+LOCK TABLES `estatus_venta` WRITE;
+/*!40000 ALTER TABLE `estatus_venta` DISABLE KEYS */;
+INSERT INTO `estatus_venta` VALUES (1,'Finalizada'),(2,'Devolucion');
+/*!40000 ALTER TABLE `estatus_venta` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `inventario_info`
@@ -93,8 +98,17 @@ CREATE TABLE `inventario_info` (
   `CODIGO_BARRA` varchar(255) DEFAULT NULL,
   `STOCK` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`PK_PRODUCTO`)
-) ENGINE=InnoDB AUTO_INCREMENT=122 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=149 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `inventario_info`
+--
+
+LOCK TABLES `inventario_info` WRITE;
+/*!40000 ALTER TABLE `inventario_info` DISABLE KEYS */;
+/*!40000 ALTER TABLE `inventario_info` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `metodos_pago`
@@ -111,6 +125,16 @@ CREATE TABLE `metodos_pago` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `metodos_pago`
+--
+
+LOCK TABLES `metodos_pago` WRITE;
+/*!40000 ALTER TABLE `metodos_pago` DISABLE KEYS */;
+INSERT INTO `metodos_pago` VALUES (1,'Efectivo'),(2,'Tarjeta'),(3,'Ambos');
+/*!40000 ALTER TABLE `metodos_pago` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `ordenes`
 --
 
@@ -125,8 +149,17 @@ CREATE TABLE `ordenes` (
   `OBSERVACIONES` text,
   `TOTAL` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`PK_ORDEN`)
-) ENGINE=InnoDB AUTO_INCREMENT=158 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=179 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ordenes`
+--
+
+LOCK TABLES `ordenes` WRITE;
+/*!40000 ALTER TABLE `ordenes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ordenes` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `pdv_roles`
@@ -141,6 +174,16 @@ CREATE TABLE `pdv_roles` (
   PRIMARY KEY (`ID_ROL`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pdv_roles`
+--
+
+LOCK TABLES `pdv_roles` WRITE;
+/*!40000 ALTER TABLE `pdv_roles` DISABLE KEYS */;
+INSERT INTO `pdv_roles` VALUES (1,'Administrador'),(2,'Vendedor');
+/*!40000 ALTER TABLE `pdv_roles` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `pdv_usuarios`
@@ -160,6 +203,16 @@ CREATE TABLE `pdv_usuarios` (
   PRIMARY KEY (`ID_USUARIO`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pdv_usuarios`
+--
+
+LOCK TABLES `pdv_usuarios` WRITE;
+/*!40000 ALTER TABLE `pdv_usuarios` DISABLE KEYS */;
+INSERT INTO `pdv_usuarios` VALUES (1,1,'Nora Elizabeth','Ortiz','Gonzalez','5518772960',1),(2,1,'Luis Enrique ','Vazquez','Ortiz','5518772960',0),(3,1,'Luis Daniel ','Vazquez ','Ortiz','5624848986',1),(6,1,'Luis Alan ','Vazquez','Ortiz','5525015563',1),(8,2,'Sandra','Estrella','Juarez','5534585156',1),(9,2,'Evelyn','Gonzalez','Trejo','5512345678',1);
+/*!40000 ALTER TABLE `pdv_usuarios` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `saldos_favor`
@@ -183,8 +236,17 @@ CREATE TABLE `saldos_favor` (
   KEY `FK_VENTA_USO` (`FK_VENTA_USO`),
   CONSTRAINT `saldos_favor_ibfk_1` FOREIGN KEY (`FK_DEVOLUCION`) REFERENCES `devoluciones_info` (`PK_DEVOLUCION`),
   CONSTRAINT `saldos_favor_ibfk_2` FOREIGN KEY (`FK_VENTA_USO`) REFERENCES `ventas_info` (`PK_VENTA`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `saldos_favor`
+--
+
+LOCK TABLES `saldos_favor` WRITE;
+/*!40000 ALTER TABLE `saldos_favor` DISABLE KEYS */;
+/*!40000 ALTER TABLE `saldos_favor` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `ventas_info`
@@ -214,8 +276,17 @@ CREATE TABLE `ventas_info` (
   CONSTRAINT `fk_vendedor_pdv_usuarios` FOREIGN KEY (`VENDEDOR`) REFERENCES `pdv_usuarios` (`ID_USUARIO`),
   CONSTRAINT `fk_ventas_producto` FOREIGN KEY (`FK_PRODUCTO`) REFERENCES `inventario_info` (`PK_PRODUCTO`),
   CONSTRAINT `ventas_info_ibfk_1` FOREIGN KEY (`FK_ORDEN`) REFERENCES `ordenes` (`PK_ORDEN`)
-) ENGINE=InnoDB AUTO_INCREMENT=161 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=189 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ventas_info`
+--
+
+LOCK TABLES `ventas_info` WRITE;
+/*!40000 ALTER TABLE `ventas_info` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ventas_info` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -226,4 +297,4 @@ CREATE TABLE `ventas_info` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-10 17:02:53
+-- Dump completed on 2026-08-19 12:13:31
